@@ -2,13 +2,24 @@ Package: mvMonitoring
 Type: Package
 Title: Multi-State Adaptive Dynamic Principal Component Analysis for
         Multivariate Process Monitoring
-Version: 0.1.0
-Authors@R: c(person("Melissa", "Johnson", email = "melissa_johnson2@baylor.edu", role = c("aut")),
-  person("Gabriel", "Odom", email = "gabriel.odom@med.miami.edu", role = c("aut","cre")), 
-  person("Ben", "Barnard", email = "ben_barnard@baylor.edu", role = c("aut")),
-  person("Karen", "Kazor", role = c("aut")),
-  person("Amanda", "Hering", email = "mandy_hering@baylor.edu", role = c("aut")))
-Maintainer: Gabriel Odom <gabriel.odom@med.miami.edu>
+Version: 0.2.0
+Authors@R: 
+  c(
+    person(
+      "Melissa", "Innerst", email = "innerst@juniata.edu", role = c("aut")
+    ),
+    person(
+      "Gabriel", "Odom", email = "gabriel.odom@fiu.edu", role = c("aut", "cre")
+    ), 
+    person(
+      "Ben", "Barnard", email = "ben_barnard@baylor.edu", role = c("aut")
+    ),
+    person("Karen", "Kazor", role = c("aut")),
+    person(
+      "Amanda", "Hering", email = "mandy_hering@baylor.edu", role = c("aut")
+    )
+  )
+Maintainer: Gabriel Odom <gabriel.odom@fiu.edu>
 Description: Use multi-state splitting to apply Adaptive-Dynamic PCA (ADPCA) to
     data generated from a continuous-time multivariate industrial or natural
     process. Employ PCA-based dimension reduction to extract linear combinations
@@ -19,20 +30,21 @@ Description: Use multi-state splitting to apply Adaptive-Dynamic PCA (ADPCA) to
     Odom, Newhart, Cath, and Hering, and is  expected to appear in Q1 of 2018.
 License: GPL-2
 Depends: R (>= 2.10)
-Imports: BMS, dplyr, lazyeval, plyr, rlang, utils, xts, zoo,
-        robustbase, graphics
+Imports: dplyr, lazyeval, plyr, rlang, utils, xts, zoo, robustbase,
+        graphics
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
-Suggests: knitr, rmarkdown
+RoxygenNote: 7.1.2
+Suggests: testthat (>= 3.0.0), knitr, rmarkdown
 VignetteBuilder: knitr
 URL: https://github.com/gabrielodom/mvMonitoring
+Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2017-10-19 18:14:35 UTC; gjo15
-Author: Melissa Johnson [aut],
+Packaged: 2022-05-02 16:13:20 UTC; grantinnerst
+Author: Melissa Innerst [aut],
   Gabriel Odom [aut, cre],
   Ben Barnard [aut],
   Karen Kazor [aut],
   Amanda Hering [aut]
 Repository: CRAN
-Date/Publication: 2017-10-20 08:55:10 UTC
+Date/Publication: 2022-05-06 07:00:07 UTC

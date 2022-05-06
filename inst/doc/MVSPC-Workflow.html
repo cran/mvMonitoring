@@ -1,65 +1,329 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Gabriel Odom" />
 
-<meta name="date" content="2017-10-19" />
+<meta name="date" content="2022-05-02" />
 
 <title>Multivariate Statistical Process Control with mvMonitoring</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
-
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -68,168 +332,393 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Multivariate Statistical Process Control with mvMonitoring</h1>
-<h4 class="author"><em>Gabriel Odom</em></h4>
-<h4 class="date"><em>2017-10-19</em></h4>
+<h1 class="title toc-ignore">Multivariate Statistical Process Control
+with mvMonitoring</h1>
+<h4 class="author">Gabriel Odom</h4>
+<h4 class="date">2022-05-02</h4>
 
 
 
-<p>This document serves to introduce engineers to the workflow necessary to follow in order to analyze multivariate process monitoring data via the <code>mvMonitoring</code> package.</p>
+<p>This document serves to introduce engineers to the workflow necessary
+to follow in order to analyze multivariate process monitoring data via
+the <code>mvMonitoring</code> package.</p>
 <p><br> <br></p>
 <div id="introduction" class="section level1">
 <h1>Introduction </h1>
-<p>This is the accompanying package to the research published by <a href="https://link.springer.com/article/10.1007/s00477-016-1246-2">Kazor et al (2016)</a> and forthcoming paper by <a href="https://www.overleaf.com/read/vbfbjsywtkvv#/26878504/">Odom et al (2017)</a> (manuscript in progress). The <code>mvMonitoring</code> package is designed to make simulation of multi-state multivariate process monitoring statistics easy and straightforward, as well as streamlining the online process monitoring component.</p>
+<p>This is the accompanying package to the research published by <a href="https://doi.org/10.1007/s00477-016-1246-2">Kazor et al (2016)</a>
+and <a href="https://doi.org/10.1002/asmb.2333">Odom et al (2018)</a>.
+The <code>mvMonitoring</code> package is designed to make simulation of
+multi-state multivariate process monitoring statistics easy and
+straightforward, as well as streamlining the online process monitoring
+component.</p>
 </div>
 <div id="motivation" class="section level1">
 <h1>Motivation </h1>
 <div id="why-use-mvmonitoring" class="section level2">
 <h2>Why use <code>mvMonitoring</code></h2>
-<p>The <code>mvMonitoring</code> package can be used to detect outliers in a correlated multivariate process with non-linear, non-stationary, or autocorrelated feature behavior. These process outliers are often indicative of system fault. The common and naive approach to multivariate process monitoring is to use expert opinion to identify a few important features to monitor visually, and raise an alarm if these features travel outside pre-defined normal operating boundaries.</p>
-<p>However, this split univariate approach fails to account for the correlated nature of the process features, so some engineers have taken to monitoring the system as a single correlated multivariate process rather than a collection of independent univaraite processes. In the literature review of the motivating papers, the authors cite how this approach has benefitted the science of process monitoring as a whole. Unfortunately, this approach has its own shortcomings – namely, montioring a multivariate process in its original feature space can lead to exorbitant computational costs.</p>
-<p>To this end, <em>principal components analysis</em> (PCA) and its many modifications have been employed to reduce the computation necessary to monitor a multivariate process as a whole. This package is an implementation of one such PCA modification.</p>
+<p>The <code>mvMonitoring</code> package can be used to detect outliers
+in a correlated multivariate process with non-linear, non-stationary, or
+autocorrelated feature behavior. These process outliers are often
+indicative of system fault. The common and naive approach to
+multivariate process monitoring is to use expert opinion to identify a
+few important features to monitor visually, and raise an alarm if these
+features travel outside pre-defined normal operating boundaries.</p>
+<p>However, this split univariate approach fails to account for the
+correlated nature of the process features, so some engineers have taken
+to monitoring the system as a single correlated multivariate process
+rather than a collection of independent univaraite processes. In the
+literature review of the motivating papers, the authors cite how this
+approach has benefitted the science of process monitoring as a whole.
+Unfortunately, this approach has its own shortcomings – namely,
+montioring a multivariate process in its original feature space can lead
+to exorbitant computational costs.</p>
+<p>To this end, <em>principal components analysis</em> (PCA) and its
+many modifications have been employed to reduce the computation
+necessary to monitor a multivariate process as a whole. This package is
+an implementation of one such PCA modification.</p>
 </div>
 <div id="multi--or-single-state-ad-pca" class="section level2">
 <h2>Multi- or Single-State AD-PCA</h2>
-<p>AD-PCA is <em>adaptive-dynamic</em> PCA, which accounts for non-linearity, non-stationarity, and autocorrelation in the multivariate process, and this modification is thoroghly discussed in Kazor et al (2016).</p>
+<p>AD-PCA is <em>adaptive-dynamic</em> PCA, which accounts for
+non-linearity, non-stationarity, and autocorrelation in the multivariate
+process, and this modification is thoroghly discussed in Kazor et al
+(2016).</p>
 <dl>
 <dt>Multi-State Monitoring</dt>
-<dd>a modification of PCA which accounts for multiple process states and models them seperately. States can be any mutually exclusive blocking factor, and states do not necessarily follow a strict order.
+<dd>
+a modification of PCA which accounts for multiple process states and
+models them seperately. States can be any mutually exclusive blocking
+factor, and states do not necessarily follow a strict order.
 </dd>
 </dl>
-<p>Multi-State AD-PCA (MSAD-PCA) allows process engineers to account for a few very different process states. Specifically, this modification should be used when features under different process states have different means, correlations, or variances.</p>
+<p>Multi-State AD-PCA (MSAD-PCA) allows process engineers to account for
+a few very different process states. Specifically, this modification
+should be used when features under different process states have
+different means, correlations, or variances.</p>
 <p><br> <br></p>
 </div>
 </div>
 <div id="the-msp-functions" class="section level1">
 <h1>The <code>msp</code> Functions</h1>
-<p>These are brief descriptions of the external functions useful for multivariate statistical process monitoring via MSAD- or AD-PCA.</p>
+<p>These are brief descriptions of the external functions useful for
+multivariate statistical process monitoring via MSAD- or AD-PCA.</p>
 <div id="simulating-data-with-mspprocessdata" class="section level2">
 <h2>Simulating Data with <code>mspProcessData</code></h2>
-<p>This function generates three-dimensional multi-state or single-state non-linear, non-stationary, and autocorrelated process observations. We follow the seminal work of <a href="http://onlinelibrary.wiley.com/doi/10.1002/aic.690420810/abstract">Dong and McAvoy (1996)</a> for generation of the foundational stationary and independent features.</p>
+<p>This function generates three-dimensional multi-state or single-state
+non-linear, non-stationary, and autocorrelated process observations. We
+follow the seminal work of <a href="https://doi.org/10.1002/aic.690420810">Dong and McAvoy (1996)</a>
+for generation of the foundational stationary and independent
+features.</p>
 <div id="latent-feature-creation" class="section level3">
 <h3>Latent Feature Creation</h3>
-<p>So that the simulated features have non-zero correlations, Dong and McAvoy created their three features all as polynomial functions of a single latent variable <span class="math inline">\(t(s)\)</span>, where <span class="math inline">\(s = 1, \ldots, \omega\)</span> is the observational index of the process.</p>
+<p>So that the simulated features have non-zero correlations, Dong and
+McAvoy created their three features all as polynomial functions of a
+single latent variable <span class="math inline">\(t(s)\)</span>, where
+<span class="math inline">\(s = 1, \ldots, \omega\)</span> is the
+observational index of the process.</p>
 <div id="autocorrelated-and-non-stationary-error" class="section level4">
 <h4>Autocorrelated and Non-Stationary Error</h4>
-<p>The <code>mspProcesData</code> function induces autocorrelation in <span class="math inline">\(t\)</span> through its errors, <span class="math inline">\(\varepsilon_s\)</span>, where <span class="math display">\[
-\varepsilon_1 \sim \mathcal{N}\left(\frac{1}{2}(a + b)(1 - \phi), \frac{b - a}{12} (1 - \phi ^ 2)\right),
-\]</span> where <span class="math inline">\(a = 0.01\)</span> and <span class="math inline">\(b = 2\)</span>. Now, we define the first-order autoregressive process on <span class="math inline">\(\varepsilon_s\)</span> by <span class="math display">\[
+<p>The <code>mspProcesData</code> function induces autocorrelation in
+<span class="math inline">\(t\)</span> through its errors, <span class="math inline">\(\varepsilon_s\)</span>, where <span class="math display">\[
+\varepsilon_1 \sim \mathcal{N}\left(\frac{1}{2}(a + b)(1 - \phi),
+\frac{b - a}{12} (1 - \phi ^ 2)\right),
+\]</span> where <span class="math inline">\(a = 0.01\)</span> and <span class="math inline">\(b = 2\)</span>. Now, we define the first-order
+autoregressive process on <span class="math inline">\(\varepsilon_s\)</span> by <span class="math display">\[
 \varepsilon_s = \varphi\varepsilon_{s - 1} + (1 - \varphi)\varepsilon,
-\]</span> where <span class="math inline">\(\varepsilon\)</span> is as defined in the previous expression and the autocorrelation component <span class="math inline">\(\phi = 0.75\)</span>. The mean and variance multipliers are the mean and variance of a random variable from the <span class="math inline">\(\mathcal{U}_{[a,b]}\)</span> distribution.</p>
+\]</span> where <span class="math inline">\(\varepsilon\)</span> is as
+defined in the previous expression and the autocorrelation component
+<span class="math inline">\(\phi = 0.75\)</span>. The mean and variance
+multipliers are the mean and variance of a random variable from the
+<span class="math inline">\(\mathcal{U}_{[a,b]}\)</span>
+distribution.</p>
 </div>
 <div id="the-non-linear-latent-process" class="section level4">
 <h4>The Non-Linear Latent Process</h4>
-<p>This <span class="math inline">\(t\)</span> vector will be sinusoidal with period <span class="math inline">\(\omega = 7 * 24 * 60\)</span> (signifying a weekly period in minute-level observations). We then synthesize a <span class="math inline">\(t\)</span> with <span class="math display">\[
+<p>This <span class="math inline">\(t\)</span> vector will be sinusoidal
+with period <span class="math inline">\(\omega = 7 * 24 * 60\)</span>
+(signifying a weekly period in minute-level observations). We then
+synthesize a <span class="math inline">\(t\)</span> with <span class="math display">\[
 t^*_s = -\cos\left( \frac{2\pi}{\omega} s \right) + \epsilon_s,
 \]</span> and scale <span class="math inline">\(t^*\)</span> to <span class="math display">\[
-t = \frac{(b - a)(t^*_s - \text{min}(t^*_s))}{\text{max}(t^*_s) - \text{min}(t^*_s)} + a.
-\]</span> Finally then, the <span class="math inline">\(t\)</span> vector will lie entirely in <span class="math inline">\([a,b]\)</span>.</p>
+t = \frac{(b - a)(t^*_s - \text{min}(t^*_s))}{\text{max}(t^*_s) -
+\text{min}(t^*_s)} + a.
+\]</span> Finally then, the <span class="math inline">\(t\)</span>
+vector will lie entirely in <span class="math inline">\([a,b]\)</span>.</p>
 </div>
 </div>
 <div id="single-state-and-multi-state-features" class="section level3">
 <h3>Single-State and Multi-State Features</h3>
 <div id="single-state-features" class="section level4">
 <h4>Single State Features</h4>
-First <code>mspProcessData</code> simulates three features, with each feaure operating under <span class="math inline">\(k\)</span> different states. Let <span class="math inline">\(&lt;x_k(t), y_k(t), z_k(t)&gt;\)</span> be the notation for State <span class="math inline">\(k\)</span>. These are the three features under State 1 (normal operating conditions, or <em>NOC</em>) as three functions of <span class="math inline">\(t\)</span>:
-<span class="math display">\[\begin{align}
-  \textbf{x}(\textbf{t}) &amp;\equiv \textbf{t} + \boldsymbol\varepsilon_1, \\
-  \textbf{y}(\textbf{t}) &amp;\equiv \textbf{t} ^ 2 - 3 * \textbf{t} + \boldsymbol\varepsilon_2, \\
-  \textbf{z}(\textbf{t}) &amp;\equiv -\textbf{t} ^ 3 + 3 * \textbf{t} ^ 2 + \boldsymbol\varepsilon_3,
-\end{align}\]</span>
-<p>where <span class="math inline">\(\varepsilon_i \sim N(0, 0.01)\)</span>. The <code>mspProcessData</code> function calls the internal <code>processNOCdata</code> function to generate single-state observations under normal operating conditions (NOC).</p>
+<p>First <code>mspProcessData</code> simulates three features, with each
+feaure operating under <span class="math inline">\(k\)</span> different
+states. Let <span class="math inline">\(&lt;x_k(t), y_k(t),
+z_k(t)&gt;\)</span> be the notation for State <span class="math inline">\(k\)</span>. These are the three features under
+State 1 (normal operating conditions, or <em>NOC</em>) as three
+functions of <span class="math inline">\(t\)</span>: <span class="math display">\[\begin{align}
+  \textbf{x}(\textbf{t}) &amp;\equiv \textbf{t} +
+\boldsymbol\varepsilon_1, \\
+  \textbf{y}(\textbf{t}) &amp;\equiv \textbf{t} ^ 2 - 3 * \textbf{t} +
+\boldsymbol\varepsilon_2, \\
+  \textbf{z}(\textbf{t}) &amp;\equiv -\textbf{t} ^ 3 + 3 * \textbf{t} ^
+2 + \boldsymbol\varepsilon_3,
+\end{align}\]</span> where <span class="math inline">\(\varepsilon_i
+\sim N(0, 0.01)\)</span>. The <code>mspProcessData</code> function calls
+the internal <code>processNOCdata</code> function to generate
+single-state observations under normal operating conditions (NOC).</p>
 </div>
 <div id="multi-state-features" class="section level4">
 <h4>Multi-State Features</h4>
-<p>The multi-state feature expression is induced by rotation and scaling of certain sets of observations. To induce a three-state, hourly switching process (the default), the <code>mspProcessData</code> function will create a label column that switches from “1” to “2” to “3” every hour. State “1” will be the features generated under the single-state assumption, while State “2” and State “3” are generated as follows. These states will be scaled rotations of the current <span class="math inline">\(&lt;x,y,z&gt;\)</span> set. The second state is yaw, pitch, and roll rotated by (0, 90, 30) degrees, and the scales are multiplied by (1, 0.5, 2). The third state is yaw, pitch, and roll rotated by (90, 0, -30) degrees, and the scales are multiplied by (0.25, 0.1, 0.75).</p>
+<p>The multi-state feature expression is induced by rotation and scaling
+of certain sets of observations. To induce a three-state, hourly
+switching process (the default), the <code>mspProcessData</code>
+function will create a label column that switches from “1” to “2” to “3”
+every hour. State “1” will be the features generated under the
+single-state assumption, while State “2” and State “3” are generated as
+follows. These states will be scaled rotations of the current <span class="math inline">\(&lt;x,y,z&gt;\)</span> set. The second state is
+yaw, pitch, and roll rotated by (0, 90, 30) degrees, and the scales are
+multiplied by (1, 0.5, 2). The third state is yaw, pitch, and roll
+rotated by (90, 0, -30) degrees, and the scales are multiplied by (0.25,
+0.1, 0.75).</p>
 <ul>
-<li><p><span class="math inline">\(\mathcal{S}_1\)</span>: <span class="math inline">\(\textbf{X}(t_s) := \langle x(t_s), y(t_s), z(t_s)\rangle\)</span>.</p></li>
-<li><p><span class="math inline">\(\mathcal{S}_2\)</span>: <span class="math inline">\(\textbf{X}(t_s) := \langle x(t_s), y(t_s), z(t_s)\rangle \cdot \textbf{P}_1\boldsymbol\Lambda_1\)</span>, where <span class="math display">\[
-\textbf{P}_1 = \begin{bmatrix}
- 0    &amp;  0.50 &amp; -0.87 \\
- 0    &amp;  0.87 &amp;  0.50 \\
- 1    &amp;  0    &amp;  0   
-\end{bmatrix}
-\]</span> is the orthogonal rotation matrix for a yaw, pitch and roll degree change of <span class="math inline">\(\langle 0^{\circ}, 90^{\circ}, 30^{\circ} \rangle\)</span>, and <span class="math inline">\(\boldsymbol\Lambda_1 = \text{diag}(1, 0.5, 2)\)</span> is a diagonal scaling matrix.</p></li>
-<li><p><span class="math inline">\(\mathcal{S}_3\)</span>: <span class="math inline">\(\textbf{X}(t_s) := \langle x(t_s), y(t_s), z(t_s)\rangle \cdot \textbf{P}_2\boldsymbol\Lambda_2\)</span>, where <span class="math display">\[
-\textbf{P}_2 = \begin{bmatrix}
- 0    &amp;  0.87 &amp; -0.50 \\
--1    &amp;  0    &amp;  0    \\
- 0    &amp;  0.50 &amp;  0.87
-\end{bmatrix}
-\]</span> is the orthogonal rotation matrix for a yaw, pitch and roll degree change of <span class="math inline">\(\langle 90^{\circ}, 0^{\circ}, -30^{\circ} \rangle\)</span>, and <span class="math inline">\(\boldsymbol\Lambda_2 = \text{diag}(0.25, 0.1, 0.75)\)</span> is a diagonal scaling matrix.</p></li>
+<li><p><span class="math inline">\(\mathcal{S}_1\)</span>: <span class="math inline">\(\textbf{X}(t_s) := \langle x(t_s), y(t_s),
+z(t_s)\rangle\)</span>.</p></li>
+<li><p><span class="math inline">\(\mathcal{S}_2\)</span>: <span class="math inline">\(\textbf{X}(t_s) := \langle x(t_s), y(t_s),
+z(t_s)\rangle \cdot \textbf{P}_1\boldsymbol\Lambda_1\)</span>, where
+<span class="math display">\[
+  \textbf{P}_1 = \begin{bmatrix}
+   0    &amp;  0.50 &amp; -0.87 \\
+   0    &amp;  0.87 &amp;  0.50 \\
+   1    &amp;  0    &amp;  0   
+  \end{bmatrix}
+  \]</span> is the orthogonal rotation matrix for a yaw, pitch and roll
+degree change of <span class="math inline">\(\langle 0^{\circ},
+90^{\circ}, 30^{\circ} \rangle\)</span>, and <span class="math inline">\(\boldsymbol\Lambda_1 = \text{diag}(1, 0.5,
+2)\)</span> is a diagonal scaling matrix.</p></li>
+<li><p><span class="math inline">\(\mathcal{S}_3\)</span>: <span class="math inline">\(\textbf{X}(t_s) := \langle x(t_s), y(t_s),
+z(t_s)\rangle \cdot \textbf{P}_2\boldsymbol\Lambda_2\)</span>, where
+<span class="math display">\[
+  \textbf{P}_2 = \begin{bmatrix}
+   0    &amp;  0.87 &amp; -0.50 \\
+  -1    &amp;  0    &amp;  0    \\
+   0    &amp;  0.50 &amp;  0.87
+  \end{bmatrix}
+  \]</span> is the orthogonal rotation matrix for a yaw, pitch and roll
+degree change of <span class="math inline">\(\langle 90^{\circ},
+0^{\circ}, -30^{\circ} \rangle\)</span>, and <span class="math inline">\(\boldsymbol\Lambda_2 = \text{diag}(0.25, 0.1,
+0.75)\)</span> is a diagonal scaling matrix.</p></li>
 </ul>
-<p>These rotation matrices <span class="math inline">\(\textbf{P}_1\)</span> and <span class="math inline">\(\textbf{P}_2\)</span> turn the states in three-dimensional space so that the states are at right angles to each other in at least one dimension, and the scaling matrices <span class="math inline">\(\boldsymbol\Lambda_1\)</span> and <span class="math inline">\(\boldsymbol\Lambda_2\)</span> inflate or deflate the process variances along each principal component. The <code>mspProcessData</code> function calls the internal function <code>dataStateSwitch</code> which splits the observations by state and applies the state-specific rotation and scaling through the internal <code>rotateScale3D</code> function.</p>
+<p>These rotation matrices <span class="math inline">\(\textbf{P}_1\)</span> and <span class="math inline">\(\textbf{P}_2\)</span> turn the states in
+three-dimensional space so that the states are at right angles to each
+other in at least one dimension, and the scaling matrices <span class="math inline">\(\boldsymbol\Lambda_1\)</span> and <span class="math inline">\(\boldsymbol\Lambda_2\)</span> inflate or deflate
+the process variances along each principal component. The
+<code>mspProcessData</code> function calls the internal function
+<code>dataStateSwitch</code> which splits the observations by state and
+applies the state-specific rotation and scaling through the internal
+<code>rotateScale3D</code> function.</p>
 </div>
 </div>
 <div id="synthetic-fault-induction" class="section level3">
 <h3>Synthetic Fault Induction</h3>
-<p>Faults can be introduced to single- or multi-state data via the <code>mspProcessData</code> function. The default fault strt index is 8500, or roughly 84% through the 10,080 observation cycle. These faults are added through the internal <code>faultSwitch</code> function.</p>
+<p>Faults can be introduced to single- or multi-state data via the
+<code>mspProcessData</code> function. The default fault strt index is
+8500, or roughly 84% through the 10,080 observation cycle. These faults
+are added through the internal <code>faultSwitch</code> function.</p>
 <ul>
-<li><p>Fault 1A is a positive shift to all three features before state rotation: <span class="math inline">\(\textbf{X}^*(t_s) = \textbf{X}(t_s) + 2,\ s \ge 8500\)</span>.</p></li>
-<li><p>Fault 1B is a positive shift to the <span class="math inline">\(x\)</span> feature before state rotation: <span class="math inline">\(x^*(t_s) = x(t_s) + 2,\ s \ge 8500\)</span>.</p></li>
-<li><p>Fault 1C is a positive shift to the <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> features in State 3 only and <em>after</em> state rotation: <span class="math inline">\(x^*(t_s) = x(t_s) + 2,\ z^*(t_s) = z(t_s) + 2,\ s \ge 8500\)</span>.</p></li>
-<li><p>Fault 2A is a positive drift across all the process monitoring features before state rotation: <span class="math inline">\(\textbf{X}^*(t_s) = \textbf{X}(t_s) + (s - 8500)\times 10^{-3}\)</span>, <span class="math inline">\(s &gt; 8500\)</span>.</p></li>
-<li><p>Fault 2B is a positive drift across the <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span> process monitoring features before state rotation: <span class="math inline">\(y^*(t_s) = y(t_s) + (s - 8500)\times 10^{-3},\ z^*(t_s) = z(t_s) + (s - 8500)\times 10^{-3}\)</span>, <span class="math inline">\(s &gt; 8500\)</span>.</p></li>
-<li><p>Fault 2C is a negative drift in the <span class="math inline">\(y\)</span> process monitoring feature in State 2 only and <em>after</em> state rotation: <span class="math inline">\(y^*(t_s) = y(t_s) - 1.5 \times \frac{s - 8500}{10080 - 8500}\)</span>, for <span class="math inline">\(s &gt; 8500\)</span>.</p></li>
-<li><p>Fault 3A is an amplification of the underlying latent variable <span class="math inline">\(t\)</span> for all features. The maximum latent drift of this fault will be 5 + 1: <span class="math inline">\(\textbf{X}^*(t_s) = \textbf{X}(t_s^*),\ s &gt; 8500\)</span>, where <span class="math inline">\(t_s^* = \left[\frac{5(s - 8500)}{\omega - 8500} + 1\right]t_s\)</span>.</p></li>
-<li><p>Fault 3B is a mutation of the underlying latent variable <span class="math inline">\(t\)</span> for the <span class="math inline">\(z\)</span> feature: <span class="math inline">\(z^*(t_s) = z(\log t_s^*)\)</span>, <span class="math inline">\(s \ge 8500\)</span>. This fault will dampen the underlying latent effect for <span class="math inline">\(z\)</span> if <span class="math inline">\(t_s &gt; 1\)</span> and amplify this effect if <span class="math inline">\(t_s &lt; 1\)</span>.</p></li>
-<li><p>Fault 3C is a polynomial mutation of the error for the <span class="math inline">\(y\)</span> feature in State 2 only and <em>after</em> state rotation: <span class="math inline">\(y^*(t_s) = y(t_s) + 2 * \textbf{e}_3(s) - 0.25\)</span>, for <span class="math inline">\(s &gt; 8500\)</span>.</p></li>
+<li><p>Fault 1A is a positive shift to all three features before state
+rotation: <span class="math inline">\(\textbf{X}^*(t_s) =
+\textbf{X}(t_s) + 2,\ s \ge 8500\)</span>.</p></li>
+<li><p>Fault 1B is a positive shift to the <span class="math inline">\(x\)</span> feature before state rotation: <span class="math inline">\(x^*(t_s) = x(t_s) + 2,\ s \ge
+8500\)</span>.</p></li>
+<li><p>Fault 1C is a positive shift to the <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span> features in State 3 only and
+<em>after</em> state rotation: <span class="math inline">\(x^*(t_s) =
+x(t_s) + 2,\ z^*(t_s) = z(t_s) + 2,\ s \ge 8500\)</span>.</p></li>
+<li><p>Fault 2A is a positive drift across all the process monitoring
+features before state rotation: <span class="math inline">\(\textbf{X}^*(t_s) = \textbf{X}(t_s) + (s -
+8500)\times 10^{-3}\)</span>, <span class="math inline">\(s &gt;
+8500\)</span>.</p></li>
+<li><p>Fault 2B is a positive drift across the <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span> process monitoring features before
+state rotation: <span class="math inline">\(y^*(t_s) = y(t_s) + (s -
+8500)\times 10^{-3},\ z^*(t_s) = z(t_s) + (s - 8500)\times
+10^{-3}\)</span>, <span class="math inline">\(s &gt;
+8500\)</span>.</p></li>
+<li><p>Fault 2C is a negative drift in the <span class="math inline">\(y\)</span> process monitoring feature in State 2
+only and <em>after</em> state rotation: <span class="math inline">\(y^*(t_s) = y(t_s) - 1.5 \times \frac{s -
+8500}{10080 - 8500}\)</span>, for <span class="math inline">\(s &gt;
+8500\)</span>.</p></li>
+<li><p>Fault 3A is an amplification of the underlying latent variable
+<span class="math inline">\(t\)</span> for all features. The maximum
+latent drift of this fault will be 5 + 1: <span class="math inline">\(\textbf{X}^*(t_s) = \textbf{X}(t_s^*),\ s &gt;
+8500\)</span>, where <span class="math inline">\(t_s^* = \left[\frac{5(s
+- 8500)}{\omega - 8500} + 1\right]t_s\)</span>.</p></li>
+<li><p>Fault 3B is a mutation of the underlying latent variable <span class="math inline">\(t\)</span> for the <span class="math inline">\(z\)</span> feature: <span class="math inline">\(z^*(t_s) = z(\log t_s^*)\)</span>, <span class="math inline">\(s \ge 8500\)</span>. This fault will dampen the
+underlying latent effect for <span class="math inline">\(z\)</span> if
+<span class="math inline">\(t_s &gt; 1\)</span> and amplify this effect
+if <span class="math inline">\(t_s &lt; 1\)</span>.</p></li>
+<li><p>Fault 3C is a polynomial mutation of the error for the <span class="math inline">\(y\)</span> feature in State 2 only and
+<em>after</em> state rotation: <span class="math inline">\(y^*(t_s) =
+y(t_s) + 2 * \textbf{e}_3(s) - 0.25\)</span>, for <span class="math inline">\(s &gt; 8500\)</span>.</p></li>
 </ul>
 </div>
 <div id="putting-it-all-together" class="section level3">
 <h3>Putting it all together…</h3>
-<p>The <code>mspProcessData</code> function can generate weeks’ worth of non-linear, non-stationary, autocorrelated, multi-state, multivariate process data useful to test new process monitoring techniques. Users can generate observations under NOC to measure false alarm rates, or induce one of nine pre-built faults to test detection time and consistency with repeated Monte Carlo sampling. We expect this function will generate interesting data useful enough to compare new and improved process monitoring techniques with existing methods.</p>
+<p>The <code>mspProcessData</code> function can generate weeks’ worth of
+non-linear, non-stationary, autocorrelated, multi-state, multivariate
+process data useful to test new process monitoring techniques. Users can
+generate observations under NOC to measure false alarm rates, or induce
+one of nine pre-built faults to test detection time and consistency with
+repeated Monte Carlo sampling. We expect this function will generate
+interesting data useful enough to compare new and improved process
+monitoring techniques with existing methods.</p>
 </div>
 </div>
 <div id="training-with-msptrain" class="section level2">
 <h2>Training with <code>mspTrain</code></h2>
-<p>The <code>mspTrain</code> function will generate projection matrices and test statistic thresholds from test data matrices.</p>
+<p>The <code>mspTrain</code> function will generate projection matrices
+and test statistic thresholds from test data matrices.</p>
 <div id="the-xts-data-matrix" class="section level3">
 <h3>The <code>xts</code> Data Matrix</h3>
-<p>An <code>xts</code> data matrix is first and foremost a matrix, <em>not</em> a data frame. For users very familiar with data frame manipulation (with <code>dplyr</code> for instance), the slight but profound differences between manipulating matrices and data frames become quickly apparent. Because of the class requirements for matrices, <em>all</em> features must be integer or double objects. The <code>mspTrain</code> function cannot train on character information.</p>
-<p>The <code>xts</code> object class stands for <em>extendible time series</em> and comes from the package <code>xts</code>, which is itself built on the package <code>zoo</code>. The date and time information (necessarily as <code>POSIX</code> objects) are stored as the row indices of <code>xts</code> matrices. We recommend the package <code>lubridate</code> for manipulating <code>POSIX</code> objects.</p>
+<p>An <code>xts</code> data matrix is first and foremost a matrix,
+<em>not</em> a data frame. For users very familiar with data frame
+manipulation (with <code>dplyr</code> for instance), the slight but
+profound differences between manipulating matrices and data frames
+become quickly apparent. Because of the class requirements for matrices,
+<em>all</em> features must be integer or double objects. The
+<code>mspTrain</code> function cannot train on character
+information.</p>
+<p>The <code>xts</code> object class stands for <em>extendible time
+series</em> and comes from the package <code>xts</code>, which is itself
+built on the package <code>zoo</code>. The date and time information
+(necessarily as <code>POSIX</code> objects) are stored as the row
+indices of <code>xts</code> matrices. We recommend the package
+<code>lubridate</code> for manipulating <code>POSIX</code> objects.</p>
 </div>
 <div id="the-class-vector" class="section level3">
 <h3>The Class Vector</h3>
-<p>When implementing single-state AD-PCA, this class vector simply needs to be a numeric column of the same value. However, for MSAD-PCA, the class vector should be an integer vector of class membership. The <code>mspTrain</code> function will split the observations by the class label, apply single-state AD-PCA to each class, then return the class-specific projection matrices and thresholds. Because of this split-apply-combine strategy, users must ensure that one or more classes are not too “rare” – that is, the class-specific sample size should be sufficiently large to allow for stable covariance matrix inversion. For <span class="math inline">\(p\)</span> features (inlcuding lags), covariance inversion requires a class sample size greater than <span class="math inline">\(p ^ 2 / 2\)</span>. Because of this, pay close attention to model parsimony – don’t block the observations on a factor unless the factor significantly affects the observations’ mean vector or covariance matrix.</p>
+<p>When implementing single-state AD-PCA, this class vector simply needs
+to be a numeric column of the same value. However, for MSAD-PCA, the
+class vector should be an integer vector of class membership. The
+<code>mspTrain</code> function will split the observations by the class
+label, apply single-state AD-PCA to each class, then return the
+class-specific projection matrices and thresholds. Because of this
+split-apply-combine strategy, users must ensure that one or more classes
+are not too “rare” – that is, the class-specific sample size should be
+sufficiently large to allow for stable covariance matrix inversion. For
+<span class="math inline">\(p\)</span> features (inlcuding lags),
+covariance inversion requires a class sample size greater than <span class="math inline">\(p ^ 2 / 2\)</span>. Because of this, pay close
+attention to model parsimony – don’t block the observations on a factor
+unless the factor significantly affects the observations’ mean vector or
+covariance matrix.</p>
 </div>
 <div id="adaptive-and-dynamic-modelling" class="section level3">
 <h3>Adaptive and Dynamic Modelling</h3>
-<p>Because of the non-linear, non-stationary, and autocorrelated nature of some process monitoring applications, the <code>mspTrain</code> function allows users to include lags of all feature variables and also to update the training window over time. Including lags of the features in the data matrix can significantly reduce the negative effects of autocorrelation. Re-estimating the projection matrix and test statistic thresholds at pre-specified time intervals reduces the negative effects of non-linearity and non-stationarity in the observations.</p>
-<p>The idea is to divide a non-linear and non-stationary process along some boundaries (every day, for instance), and then the process becomes locally linear and stationary within the window. As time progresses, the oldest observations are “forgotten” and the newest observations are “learned”, which causes the projection and NOC thresholds to update over time.</p>
+<p>Because of the non-linear, non-stationary, and autocorrelated nature
+of some process monitoring applications, the <code>mspTrain</code>
+function allows users to include lags of all feature variables and also
+to update the training window over time. Including lags of the features
+in the data matrix can significantly reduce the negative effects of
+autocorrelation. Re-estimating the projection matrix and test statistic
+thresholds at pre-specified time intervals reduces the negative effects
+of non-linearity and non-stationarity in the observations.</p>
+<p>The idea is to divide a non-linear and non-stationary process along
+some boundaries (every day, for instance), and then the process becomes
+locally linear and stationary within the window. As time progresses, the
+oldest observations are “forgotten” and the newest observations are
+“learned”, which causes the projection and NOC thresholds to update over
+time.</p>
 </div>
 <div id="model-training" class="section level3">
 <h3>Model Training</h3>
-<p>After the observations have been split by class, the <code>mspTrain</code> function will call the internal function <code>processMonitor</code>, which in turn calls the internal function <code>faultFilter</code>. This function will calculate a linear projection matrix of the data by taking the PCA of the training data matrix. The observations will then be projected linearly into a reduced-feature subspace which preserves a chosen proportion of the energy of the training data, where the energy of a matrix is the sum of eigenvalues of that matrix. The default proportion is 90%. This projection is calculated by the internal <code>pca</code> function.</p>
-<p>Furthermore, non-parametric threshold values are calculated for the two process monitoring statistics – <em>Squared Prediction Error</em> and <em>Hotelling’s <span class="math inline">\(T^2\)</span></em>. These monitoring statistics are described in the motivating paper. These threshold values are found in the internal <code>threshold</code> function, and passed through the function pipe to be returned by <code>mspTrain</code>. The <span class="math inline">\(\alpha\)</span>-level of the nonparametric threshold is controlled by the user, and its default value is 0.001.</p>
-<p>Finally, the <code>mspTrain</code> function will remove any observation which would cause an alarm from the training data set. The alarm free observations will be returned in one <code>xts</code> matrix, while the alarmed observations will be returned by another. When training your process monitor, pay attention to the observations flagged as alarms. The proportion of observations flagged as faults may be higher than the <span class="math inline">\(\alpha\)</span>-level specified, so some tuning may be necessary.</p>
+<p>After the observations have been split by class, the
+<code>mspTrain</code> function will call the internal function
+<code>processMonitor</code>, which in turn calls the internal function
+<code>faultFilter</code>. This function will calculate a linear
+projection matrix of the data by taking the PCA of the training data
+matrix. The observations will then be projected linearly into a
+reduced-feature subspace which preserves a chosen proportion of the
+energy of the training data, where the energy of a matrix is the sum of
+eigenvalues of that matrix. The default proportion is 90%. This
+projection is calculated by the internal <code>pca</code> function.</p>
+<p>Furthermore, non-parametric threshold values are calculated for the
+two process monitoring statistics – <em>Squared Prediction Error</em>
+and <em>Hotelling’s <span class="math inline">\(T^2\)</span></em>. These
+monitoring statistics are described in the motivating paper. These
+threshold values are found in the internal <code>threshold</code>
+function, and passed through the function pipe to be returned by
+<code>mspTrain</code>. The <span class="math inline">\(\alpha\)</span>-level of the nonparametric
+threshold is controlled by the user, and its default value is 0.001.</p>
+<p>Finally, the <code>mspTrain</code> function will remove any
+observation which would cause an alarm from the training data set. The
+alarm free observations will be returned in one <code>xts</code> matrix,
+while the alarmed observations will be returned by another. When
+training your process monitor, pay attention to the observations flagged
+as alarms. The proportion of observations flagged as faults may be
+higher than the <span class="math inline">\(\alpha\)</span>-level
+specified, so some tuning may be necessary.</p>
 </div>
 </div>
 <div id="monitoring-incoming-observations-with-mspmonitor" class="section level2">
 <h2>Monitoring Incoming Observations with <code>mspMonitor</code></h2>
-<p>After training the model with <code>mspTrain</code>, the projection matrices and non-parametric monitoring statistic thresholds can be used to flag incoming observations. This function can check every observation in a test matrix (useful when analyzing past data), but was instead designed to test a single incoming observation at a time via a script or batch file. To this end, the <code>mspMonitor</code> function projects a single observation with the class projection matrices returned by <code>mspTrain</code> and checks the observation’s SPE and <span class="math inline">\(T^2\)</span> statistics against the thresholds returned by <code>mspTrain</code>. The <code>mspMonitor</code> will then append the monitoring statistic values, and indicators if these values exceed normal thresholds, to the end of the observation row. This new appended observation will be passed to the <code>mspWarning</code> function.</p>
+<p>After training the model with <code>mspTrain</code>, the projection
+matrices and non-parametric monitoring statistic thresholds can be used
+to flag incoming observations. This function can check every observation
+in a test matrix (useful when analyzing past data), but was instead
+designed to test a single incoming observation at a time via a script or
+batch file. To this end, the <code>mspMonitor</code> function projects a
+single observation with the class projection matrices returned by
+<code>mspTrain</code> and checks the observation’s SPE and <span class="math inline">\(T^2\)</span> statistics against the thresholds
+returned by <code>mspTrain</code>. The <code>mspMonitor</code> will then
+append the monitoring statistic values, and indicators if these values
+exceed normal thresholds, to the end of the observation row. This new
+appended observation will be passed to the <code>mspWarning</code>
+function.</p>
 </div>
 <div id="issue-a-warning-with-mspwarning" class="section level2">
 <h2>Issue a Warning with <code>mspWarning</code></h2>
-<p>If an observation returned by the <code>mspMonitor</code> function has positive statistic indicator values for either the SPE or <span class="math inline">\(T^2\)</span> monitoring statistics, then the <code>mspWarning</code> function will query the last set <span class="math inline">\(r\)</span> observations for other flags. If all <span class="math inline">\(r\)</span> observations are positive for anomalies, then the <code>mspWarning</code> function will issue an alarm. This is the parameter “faultsToTriggerAlarm”, and it defaults to 5. However, this default value depends heavily on the scale of the data: for continuous observations aggregated and recorded every five seconds, the number of sequential faults necessary to trigger an alarm should be very high, perhaps even 50 or more. For observations aggregated to the 10-minute-scale, only three sequential faults may be necessary.</p>
-<p>In future updates of this package, this function will also have an option to issue an alarm if a critical mass of non-sequential alarms is reached in a set period of observations. This modification may be necessary if the observation level becomes more fine than the 1-minute-level. Additionally, this function will also be equipped to take in a cell phone number and service provider and issue an alarm via SMS through email.</p>
+<p>If an observation returned by the <code>mspMonitor</code> function
+has positive statistic indicator values for either the SPE or <span class="math inline">\(T^2\)</span> monitoring statistics, then the
+<code>mspWarning</code> function will query the last set <span class="math inline">\(r\)</span> observations for other flags. If all
+<span class="math inline">\(r\)</span> observations are positive for
+anomalies, then the <code>mspWarning</code> function will issue an
+alarm. This is the parameter “faultsToTriggerAlarm”, and it defaults to
+5. However, this default value depends heavily on the scale of the data:
+for continuous observations aggregated and recorded every five seconds,
+the number of sequential faults necessary to trigger an alarm should be
+very high, perhaps even 50 or more. For observations aggregated to the
+10-minute-scale, only three sequential faults may be necessary.</p>
+<p>In future updates of this package, this function will also have an
+option to issue an alarm if a critical mass of non-sequential alarms is
+reached in a set period of observations. This modification may be
+necessary if the observation level becomes more fine than the
+1-minute-level. Additionally, this function will also be equipped to
+take in a cell phone number and service provider and issue an alarm via
+SMS through email.</p>
 <p><br> <br></p>
 </div>
 </div>
 <div id="example-simulation-workflow" class="section level1">
 <h1>Example Simulation Workflow</h1>
-<p>This section provides a fully-commented code walkthrough for the main <code>msp</code> functions in the <code>mvMonitoring</code> package.</p>
+<p>This section provides a fully-commented code walkthrough for the main
+<code>msp</code> functions in the <code>mvMonitoring</code> package.</p>
 <div id="generating-synthetic-data" class="section level2">
 <h2>Generating Synthetic Data</h2>
-<p>First begin by generating multi-state data from a fault scenario. This code will yield observations under Fault 2A, as described the Synthetic Fault Induction section. We choose the default options for the period length (7 days * 24 hours * 60 minutes = 10,080 observations), the starting index of the fault (8500 out of 10080), and the time stamp for beggining the data is 16 May of 2016 at 10:00AM (my wedding anniversary). As we can see from the <code>str()</code> function, we have an <code>xts</code> matrix with 10080 rows and four columns (the state indicator and the three features).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mvMonitoring)
-fault1A_xts &lt;-<span class="st"> </span><span class="kw">mspProcessData</span>(<span class="dt">faults =</span> <span class="st">&quot;A1&quot;</span>,
-                              <span class="dt">period =</span> <span class="dv">7</span> *<span class="st"> </span><span class="dv">24</span> *<span class="st"> </span><span class="dv">60</span>,
-                              <span class="dt">faultStartIndex =</span> <span class="dv">8500</span>,
-                              <span class="dt">startTime =</span> <span class="st">&quot;2015-05-16 10:00:00 CST&quot;</span>)
-
-<span class="kw">str</span>(fault1A_xts)</code></pre></div>
-<pre><code>## An 'xts' object on 2015-05-16 10:00:00/2015-05-23 09:59:00 containing:
+<p>First begin by generating multi-state data from a fault scenario.
+This code will yield observations under Fault 2A, as described the
+Synthetic Fault Induction section. We choose the default options for the
+period length (7 days * 24 hours * 60 minutes = 10,080 observations),
+the starting index of the fault (8500 out of 10080), and the time stamp
+for beggining the data is 16 May of 2016 at 10:00AM (my wedding
+anniversary). As we can see from the <code>str()</code> function, we
+have an <code>xts</code> matrix with 10080 rows and four columns (the
+state indicator and the three features).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mvMonitoring)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>fault1A_xts <span class="ot">&lt;-</span> <span class="fu">mspProcessData</span>(<span class="at">faults =</span> <span class="st">&quot;A1&quot;</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">period =</span> <span class="dv">7</span> <span class="sc">*</span> <span class="dv">24</span> <span class="sc">*</span> <span class="dv">60</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">faultStartIndex =</span> <span class="dv">8500</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">startTime =</span> <span class="st">&quot;2015-05-16 10:00:00 CST&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(fault1A_xts)</span></code></pre></div>
+<pre><code>## An &#39;xts&#39; object on 2015-05-16 10:00:00/2015-05-23 09:59:00 containing:
 ##   Data: num [1:10080, 1:4] 1 1 1 1 1 1 1 1 1 1 ...
 ##  - attr(*, &quot;dimnames&quot;)=List of 2
 ##   ..$ : NULL
@@ -240,108 +729,181 @@ fault1A_xts &lt;-<span class="st"> </span><span class="kw">mspProcessData</span>
 </div>
 <div id="train-the-fault-detection-threshold" class="section level2">
 <h2>Train the Fault Detection Threshold</h2>
-<p>Now that these observations are generated and stored in memory, the <code>mspTrain</code> function can train the MSAD-PCA model. The last 1620 observations (27 hours’ worth) will be saved for testing. The <code>mspTrain</code> function takes in the training data set partitioned between the observation and the label column. If this function errors, make sure the label column is not included in the data matrix – this will cause a singularity in the data. The function will 1. Train on the first three days’ worth of observations, as set by <code>trainObs</code>. 1. Scan the fourth day for anomalies, as set by <code>updateFreq</code>. 1. Remove any alarmed observations. 1. “Forget” the first day’s observations. 1. “Learn” the non-alarmed observations from the fourth day. 1. Retrain and repeat until the end of the data matrix</p>
-<p>Furthermore, the <code>Dynamic = TRUE</code> option means that the <code>mspTrain</code> function will include the lags specified by the <code>lagsIncluded</code> argument. Finally, the number of sequential anomalous observations necessary to raise an alarm is set at 5 by the <code>faultsToTriggerAlarm</code> argument. These last three arguments are set to their defaults.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">train1A_xts &lt;-<span class="st"> </span>fault1A_xts[<span class="dv">1</span>:<span class="dv">8461</span>,]
-<span class="co"># This function will run in 13 seconds on the author's machine.</span>
-train1A_ls &lt;-<span class="st"> </span><span class="kw">mspTrain</span>(<span class="dt">data =</span> train1A_xts[,-<span class="dv">1</span>],
-                       <span class="dt">labelVector =</span> train1A_xts[,<span class="dv">1</span>],
-                       <span class="dt">trainObs =</span> <span class="dv">3</span> *<span class="st"> </span><span class="dv">24</span> *<span class="st"> </span><span class="dv">60</span>,
-                       <span class="dt">updateFreq =</span> <span class="dv">1</span> *<span class="st"> </span><span class="dv">24</span> *<span class="st"> </span><span class="dv">60</span>,
-                       <span class="dt">Dynamic =</span> <span class="ot">TRUE</span>,
-                       <span class="dt">lagsIncluded =</span> <span class="dv">0</span>:<span class="dv">1</span>,
-                       <span class="dt">faultsToTriggerAlarm =</span> <span class="dv">5</span>)</code></pre></div>
-<p>The <code>mspTrain</code> function returns a list of four objects:</p>
+<p>Now that these observations are generated and stored in memory, the
+<code>mspTrain</code> function can train the MSAD-PCA model. The last
+1620 observations (27 hours’ worth) will be saved for testing. The
+<code>mspTrain</code> function takes in the training data set
+partitioned between the observation and the label column. If this
+function errors, make sure the label column is not included in the data
+matrix – this will cause a singularity in the data. The function will 1.
+Train on the first three days’ worth of observations, as set by
+<code>trainObs</code>. 1. Scan the fourth day for anomalies, as set by
+<code>updateFreq</code>. 1. Remove any alarmed observations. 1. “Forget”
+the first day’s observations. 1. “Learn” the non-alarmed observations
+from the fourth day. 1. Retrain and repeat until the end of the data
+matrix</p>
+<p>Furthermore, the <code>Dynamic = TRUE</code> option means that the
+<code>mspTrain</code> function will include the lags specified by the
+<code>lagsIncluded</code> argument. Finally, the number of sequential
+anomalous observations necessary to raise an alarm is set at 5 by the
+<code>faultsToTriggerAlarm</code> argument. These last three arguments
+are set to their defaults.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>train1A_xts <span class="ot">&lt;-</span> fault1A_xts[<span class="dv">1</span><span class="sc">:</span><span class="dv">8461</span>,]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This function will run in 13 seconds on the author&#39;s machine.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>train1A_ls <span class="ot">&lt;-</span> <span class="fu">mspTrain</span>(<span class="at">data =</span> train1A_xts[,<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labelVector =</span> train1A_xts[,<span class="dv">1</span>],</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">trainObs =</span> <span class="dv">3</span> <span class="sc">*</span> <span class="dv">24</span> <span class="sc">*</span> <span class="dv">60</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">updateFreq =</span> <span class="dv">1</span> <span class="sc">*</span> <span class="dv">24</span> <span class="sc">*</span> <span class="dv">60</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">Dynamic =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">lagsIncluded =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">faultsToTriggerAlarm =</span> <span class="dv">5</span>)</span></code></pre></div>
+<p>The <code>mspTrain</code> function returns a list of four
+objects:</p>
 <ul>
-<li><code>FaultChecks</code>: An <code>xts</code> matrix of monitoring statistics and associated indicators for all observations after the burn-in of <code>trainObs</code>. It will have 10080 - <code>trainObs</code> number of rows and five columns:
+<li><code>FaultChecks</code>: An <code>xts</code> matrix of monitoring
+statistics and associated indicators for all observations after the
+burn-in of <code>trainObs</code>. It will have 10080 -
+<code>trainObs</code> number of rows and five columns:
 <ul>
 <li><code>SPE</code>: the SPE statistic for each observation.</li>
-<li><code>SPE_Flag</code>: an indicator showing if the SPE statistic for that observation is beyond the calculated threshold; 0 is normal, 1 is flagged.</li>
-<li><code>T2</code>: the <span class="math inline">\(T^2\)</span> statistic for each observation.</li>
-<li><code>T2_Flag</code>: an indicator showing if the <span class="math inline">\(T^2\)</span> statistic for that observation is beyond the calculated threshold; 0 is normal, 1 is flagged.</li>
-<li><code>Alarm</code>: an indicator showing if the observation is in a sequence of flagged observations; 0 is normal, 1 is alarmed.</li>
+<li><code>SPE_Flag</code>: an indicator showing if the SPE statistic for
+that observation is beyond the calculated threshold; 0 is normal, 1 is
+flagged.</li>
+<li><code>T2</code>: the <span class="math inline">\(T^2\)</span>
+statistic for each observation.</li>
+<li><code>T2_Flag</code>: an indicator showing if the <span class="math inline">\(T^2\)</span> statistic for that observation is
+beyond the calculated threshold; 0 is normal, 1 is flagged.</li>
+<li><code>Alarm</code>: an indicator showing if the observation is in a
+sequence of flagged observations; 0 is normal, 1 is alarmed.</li>
 </ul></li>
-<li><code>Non_Alarmed_Obs</code>: An <code>xts</code> matrix will all observations with an alarm code of 0 from <code>FaultChecks</code>. Of note, this matrix contains the data, while the <code>FaultChecks</code> matrix only contains the monitoring statistics and indicators.</li>
-<li><code>Alarms</code>: An <code>xts</code> matrix of all the observations removed from the training data matrix.</li>
-<li><code>TrainingSpecs</code>: a list with length equal to the number of classes – in this case 3. For each class, this list contains a list of six objects:
+<li><code>Non_Alarmed_Obs</code>: An <code>xts</code> matrix will all
+observations with an alarm code of 0 from <code>FaultChecks</code>. Of
+note, this matrix contains the data, while the <code>FaultChecks</code>
+matrix only contains the monitoring statistics and indicators.</li>
+<li><code>Alarms</code>: An <code>xts</code> matrix of all the
+observations removed from the training data matrix.</li>
+<li><code>TrainingSpecs</code>: a list with length equal to the number
+of classes – in this case 3. For each class, this list contains a list
+of six objects:
 <ul>
-<li><code>SPE_Threshold</code>: a named numeric scalar of the 1 - <span class="math inline">\(\alpha\)</span> percentile of the non-parametric estimate of the SPE statistic density.</li>
-<li><code>T2_Threshold</code>: a named numeric scalar of the 1 - <span class="math inline">\(\alpha\)</span> percentile of the non-parametric estimate of the <span class="math inline">\(T^2\)</span> statistic density.</li>
-<li><code>projectionMatrix</code>: The <span class="math inline">\(p \times q\)</span> matrix of eigenvectors necessary to project a <span class="math inline">\(p\)</span>-dimensional observation to <span class="math inline">\(q\)</span> dimensions. This is necessary to reduce the dimension of any test observation, and is used in calculating the SPE statistic for test observations.</li>
-<li><code>LambdaInv</code>: The inverse of the diagonal <span class="math inline">\(q \times q\)</span> matrix of eigenvalues. This matrix is used to calculate the <span class="math inline">\(T^2\)</span> statistic for test observations.</li>
-<li><code>muTrain</code>: The mean vector of the training observations. This is used to center the test observations on the training mean.</li>
-<li><code>RootPrecisTrain</code>: The <span class="math inline">\(p \times p\)</span> diagonal matrix of the inverse square roots of the feature variances. This is used to scale the test observations into the training scale.</li>
+<li><code>SPE_Threshold</code>: a named numeric scalar of the 1 - <span class="math inline">\(\alpha\)</span> percentile of the non-parametric
+estimate of the SPE statistic density.</li>
+<li><code>T2_Threshold</code>: a named numeric scalar of the 1 - <span class="math inline">\(\alpha\)</span> percentile of the non-parametric
+estimate of the <span class="math inline">\(T^2\)</span> statistic
+density.</li>
+<li><code>projectionMatrix</code>: The <span class="math inline">\(p
+\times q\)</span> matrix of eigenvectors necessary to project a <span class="math inline">\(p\)</span>-dimensional observation to <span class="math inline">\(q\)</span> dimensions. This is necessary to reduce
+the dimension of any test observation, and is used in calculating the
+SPE statistic for test observations.</li>
+<li><code>LambdaInv</code>: The inverse of the diagonal <span class="math inline">\(q \times q\)</span> matrix of eigenvalues. This
+matrix is used to calculate the <span class="math inline">\(T^2\)</span>
+statistic for test observations.</li>
+<li><code>muTrain</code>: The mean vector of the training observations.
+This is used to center the test observations on the training mean.</li>
+<li><code>RootPrecisTrain</code>: The <span class="math inline">\(p
+\times p\)</span> diagonal matrix of the inverse square roots of the
+feature variances. This is used to scale the test observations into the
+training scale.</li>
 </ul></li>
 </ul>
 </div>
 <div id="test-new-observations-for-anomalies" class="section level2">
 <h2>Test New Observations for Anomalies</h2>
-<p>The training data summary was given by <code>mspTrain</code>, so this information can now be used to monitor incoming observations for system faults.</p>
+<p>The training data summary was given by <code>mspTrain</code>, so this
+information can now be used to monitor incoming observations for system
+faults.</p>
 <div id="adding-lagged-features" class="section level3">
 <h3>Adding Lagged Features</h3>
-<p>First, concatenate the last given observation from the training set as “row 0” of the test data set. This will enable <code>mspMonitor</code> to include lag-1 features. Similarly, one would include the last <span class="math inline">\(k\)</span> observations of the training set should the process dictate the need for any lag-<span class="math inline">\(k\)</span> features. Because the Fault Start Index was set to 8500, this testing window will show the change point between observations generated under normal conditions and those generated under a fault state.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(xts)
-test1A_xts &lt;-<span class="st"> </span>fault1A_xts[<span class="dv">8460</span>:<span class="dv">8520</span>, -<span class="dv">1</span>]
-lagTest1A_xts &lt;-<span class="st"> </span><span class="kw">lag.xts</span>(test1A_xts, <span class="dv">0</span>:<span class="dv">1</span>)
-lagTest1A_xts &lt;-<span class="st"> </span><span class="kw">cbind</span>(fault1A_xts[<span class="dv">8461</span>:<span class="dv">8520</span>,<span class="dv">1</span>],
-                       lagTest1A_xts[-<span class="dv">1</span>,])
-<span class="kw">head</span>(lagTest1A_xts)</code></pre></div>
-<pre><code>##                     state         x         y         z       x.1
-## 2015-05-22 07:00:00     1 0.4012720 -1.223200 0.7019589 0.2832362
-## 2015-05-22 07:01:00     1 0.4666993 -1.262146 0.5648117 0.4012720
-## 2015-05-22 07:02:00     1 0.5951797 -1.405738 0.8368642 0.4666993
-## 2015-05-22 07:03:00     1 0.6723615 -1.568123 0.6558673 0.5951797
-## 2015-05-22 07:04:00     1 0.5261731 -1.385893 0.6281094 0.6723615
-## 2015-05-22 07:05:00     1 0.5623019 -1.559067 0.7863209 0.5261731
-##                             y.1       z.1
-## 2015-05-22 07:00:00  0.06553175 0.1599106
-## 2015-05-22 07:01:00 -1.22319980 0.7019589
-## 2015-05-22 07:02:00 -1.26214572 0.5648117
-## 2015-05-22 07:03:00 -1.40573759 0.8368642
-## 2015-05-22 07:04:00 -1.56812311 0.6558673
-## 2015-05-22 07:05:00 -1.38589338 0.6281094</code></pre>
+<p>First, concatenate the last given observation from the training set
+as “row 0” of the test data set. This will enable
+<code>mspMonitor</code> to include lag-1 features. Similarly, one would
+include the last <span class="math inline">\(k\)</span> observations of
+the training set should the process dictate the need for any lag-<span class="math inline">\(k\)</span> features. Because the Fault Start Index
+was set to 8500, this testing window will show the change point between
+observations generated under normal conditions and those generated under
+a fault state.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xts)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>test1A_xts <span class="ot">&lt;-</span> fault1A_xts[<span class="dv">8460</span><span class="sc">:</span><span class="dv">8520</span>, <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>lagTest1A_xts <span class="ot">&lt;-</span> <span class="fu">lag.xts</span>(test1A_xts, <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>lagTest1A_xts <span class="ot">&lt;-</span> <span class="fu">cbind</span>(fault1A_xts[<span class="dv">8461</span><span class="sc">:</span><span class="dv">8520</span>,<span class="dv">1</span>],</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                       lagTest1A_xts[<span class="sc">-</span><span class="dv">1</span>,])</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lagTest1A_xts)</span></code></pre></div>
+<pre><code>##                     state         x         y         z       x.1         y.1
+## 2015-05-22 07:00:00     1 0.6605506 -1.352505 0.7022203 0.3517379  0.08941368
+## 2015-05-22 07:01:00     1 0.6930849 -1.549464 0.5003980 0.6605506 -1.35250459
+## 2015-05-22 07:02:00     1 0.5580540 -1.592159 0.7650112 0.6930849 -1.54946398
+## 2015-05-22 07:03:00     1 0.5508984 -1.238318 0.5811748 0.5580540 -1.59215884
+## 2015-05-22 07:04:00     1 0.4306045 -1.206357 0.6407818 0.5508984 -1.23831806
+## 2015-05-22 07:05:00     1 0.4492232 -1.386915 0.5970133 0.4306045 -1.20635706
+##                           z.1
+## 2015-05-22 07:00:00 0.3380023
+## 2015-05-22 07:01:00 0.7022203
+## 2015-05-22 07:02:00 0.5003980
+## 2015-05-22 07:03:00 0.7650112
+## 2015-05-22 07:04:00 0.5811748
+## 2015-05-22 07:05:00 0.6407818</code></pre>
 </div>
 <div id="monitoring-the-test-data" class="section level3">
 <h3>Monitoring the Test Data</h3>
-<p>With the lagged test observations in the working environment, the <code>mspMonitor</code> function can be applied. This function (similarly to <code>mspTrain</code>) takes in the label information as a separate argument from the input data. Further, the <code>mspMonitor</code> function takes in the <code>TrainingSpecs</code> object returned in the results list from <code>mspTrain</code>. Notice that the first six rows of the monitor matrix are the exact same as the first six rows of the lagged test matrix, except that the rows of the monitor matrix have the monitoring statistic and corresponding indicator columns appended.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">monitor1A_xts &lt;-<span class="st"> </span><span class="kw">mspMonitor</span>(<span class="dt">observations =</span> lagTest1A_xts[,-<span class="dv">1</span>],
-                            <span class="dt">labelVector =</span> lagTest1A_xts[,<span class="dv">1</span>],
-                            <span class="dt">trainingSummary =</span> train1A_ls$TrainingSpecs)
-<span class="kw">head</span>(monitor1A_xts)</code></pre></div>
+<p>With the lagged test observations in the working environment, the
+<code>mspMonitor</code> function can be applied. This function
+(similarly to <code>mspTrain</code>) takes in the label information as a
+separate argument from the input data. Further, the
+<code>mspMonitor</code> function takes in the <code>TrainingSpecs</code>
+object returned in the results list from <code>mspTrain</code>. Notice
+that the first six rows of the monitor matrix are the exact same as the
+first six rows of the lagged test matrix, except that the rows of the
+monitor matrix have the monitoring statistic and corresponding indicator
+columns appended.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>monitor1A_xts <span class="ot">&lt;-</span> <span class="fu">mspMonitor</span>(<span class="at">observations =</span> lagTest1A_xts[,<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">labelVector =</span> lagTest1A_xts[,<span class="dv">1</span>],</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">trainingSummary =</span> train1A_ls<span class="sc">$</span>TrainingSpecs)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(monitor1A_xts)</span></code></pre></div>
 <pre><code>##                             x         y         z       x.1         y.1
-## 2015-05-22 07:00:00 0.4012720 -1.223200 0.7019589 0.2832362  0.06553175
-## 2015-05-22 07:01:00 0.4666993 -1.262146 0.5648117 0.4012720 -1.22319980
-## 2015-05-22 07:02:00 0.5951797 -1.405738 0.8368642 0.4666993 -1.26214572
-## 2015-05-22 07:03:00 0.6723615 -1.568123 0.6558673 0.5951797 -1.40573759
-## 2015-05-22 07:04:00 0.5261731 -1.385893 0.6281094 0.6723615 -1.56812311
-## 2015-05-22 07:05:00 0.5623019 -1.559067 0.7863209 0.5261731 -1.38589338
-##                           z.1        SPE SPE_Flag        T2 T2_Flag Alarm
-## 2015-05-22 07:00:00 0.1599106 1.44363972        0 27.312957       0    NA
-## 2015-05-22 07:01:00 0.7019589 1.24142482        0  8.038336       0    NA
-## 2015-05-22 07:02:00 0.5648117 0.47968005        0  6.858574       0    NA
-## 2015-05-22 07:03:00 0.8368642 0.22597098        0  5.239370       0    NA
-## 2015-05-22 07:04:00 0.6558673 0.91717079        0  6.243325       0    NA
-## 2015-05-22 07:05:00 0.6281094 0.04783268        0  5.810495       0    NA</code></pre>
+## 2015-05-22 07:00:00 0.6605506 -1.352505 0.7022203 0.3517379  0.08941368
+## 2015-05-22 07:01:00 0.6930849 -1.549464 0.5003980 0.6605506 -1.35250459
+## 2015-05-22 07:02:00 0.5580540 -1.592159 0.7650112 0.6930849 -1.54946398
+## 2015-05-22 07:03:00 0.5508984 -1.238318 0.5811748 0.5580540 -1.59215884
+## 2015-05-22 07:04:00 0.4306045 -1.206357 0.6407818 0.5508984 -1.23831806
+## 2015-05-22 07:05:00 0.4492232 -1.386915 0.5970133 0.4306045 -1.20635706
+##                           z.1       SPE SPE_Flag        T2 T2_Flag Alarm
+## 2015-05-22 07:00:00 0.3380023 0.8391793        0 28.218074       0    NA
+## 2015-05-22 07:01:00 0.7022203 0.4893678        0  5.588170       0    NA
+## 2015-05-22 07:02:00 0.5003980 0.2825050        0  5.373855       0    NA
+## 2015-05-22 07:03:00 0.7650112 1.9739726        0  6.960862       0    NA
+## 2015-05-22 07:04:00 0.5811748 2.0224181        0  7.947395       0    NA
+## 2015-05-22 07:05:00 0.6407818 0.4898743        0  7.691632       0    NA</code></pre>
 </div>
 </div>
 <div id="warn-operators-during-alarms" class="section level2">
 <h2>Warn Operators during Alarms</h2>
-<p>Note that all <code>Alarm</code> codes in the monitor matrix above are recorded with <code>NA</code> values. This is because the <code>mspMonitor</code> function does not check the sequential flag conditions of the monitor matrix. This is the responsibility of the <code>mspWarning</code> function. Because the <code>mspWarning</code> function is designed to test one incoming observation at a time through a script or batch file, the following example is designed to mimic the behavior of the <code>mspWarning</code> function as each new observation comes online.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">alarm1A_xts &lt;-<span class="st"> </span>monitor1A_xts
-for(i in <span class="dv">1</span>:<span class="kw">nrow</span>(alarm1A_xts)){
-  if(i &lt;<span class="st"> </span>(<span class="dv">5</span> +<span class="st"> </span><span class="dv">1</span>)){
-    alarm1A_xts[<span class="dv">1</span>:i,] &lt;-<span class="st"> </span><span class="kw">mspWarning</span>(alarm1A_xts[<span class="dv">1</span>:i,])
-  }else{
-    alarm1A_xts[(i -<span class="st"> </span><span class="dv">5</span>):i,] &lt;-<span class="st"> </span><span class="kw">mspWarning</span>(alarm1A_xts[(i -<span class="st"> </span><span class="dv">5</span>):i,])
-  }
-}</code></pre></div>
-<p>The fault was introduced at index 8500, which corresponds to about 40 minutes into the test hour.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(alarm1A_xts[, <span class="kw">ncol</span>(alarm1A_xts)],
-     <span class="dt">main =</span> <span class="st">&quot;Alarm Codes for Test Data&quot;</span>)</code></pre></div>
-<p><img src="data:image/png;base64,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" width="100%" /> The alarm codes are</p>
+<p>Note that all <code>Alarm</code> codes in the monitor matrix above
+are recorded with <code>NA</code> values. This is because the
+<code>mspMonitor</code> function does not check the sequential flag
+conditions of the monitor matrix. This is the responsibility of the
+<code>mspWarning</code> function. Because the <code>mspWarning</code>
+function is designed to test one incoming observation at a time through
+a script or batch file, the following example is designed to mimic the
+behavior of the <code>mspWarning</code> function as each new observation
+comes online.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>alarm1A_xts <span class="ot">&lt;-</span> monitor1A_xts</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(alarm1A_xts)){</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">&lt;</span> (<span class="dv">5</span> <span class="sc">+</span> <span class="dv">1</span>)){</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    alarm1A_xts[<span class="dv">1</span><span class="sc">:</span>i,] <span class="ot">&lt;-</span> <span class="fu">mspWarning</span>(alarm1A_xts[<span class="dv">1</span><span class="sc">:</span>i,])</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    alarm1A_xts[(i <span class="sc">-</span> <span class="dv">5</span>)<span class="sc">:</span>i,] <span class="ot">&lt;-</span> <span class="fu">mspWarning</span>(alarm1A_xts[(i <span class="sc">-</span> <span class="dv">5</span>)<span class="sc">:</span>i,])</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>The fault was introduced at index 8500, which corresponds to about 40
+minutes into the test hour.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(alarm1A_xts[, <span class="fu">ncol</span>(alarm1A_xts)],</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Alarm Codes for Test Data&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAEgCAYAAABsPKAhAAAEDmlDQ1BrQ0dDb2xvclNwYWNlR2VuZXJpY1JHQgAAOI2NVV1oHFUUPpu5syskzoPUpqaSDv41lLRsUtGE2uj+ZbNt3CyTbLRBkMns3Z1pJjPj/KRpKT4UQRDBqOCT4P9bwSchaqvtiy2itFCiBIMo+ND6R6HSFwnruTOzu5O4a73L3PnmnO9+595z7t4LkLgsW5beJQIsGq4t5dPis8fmxMQ6dMF90A190C0rjpUqlSYBG+PCv9rt7yDG3tf2t/f/Z+uuUEcBiN2F2Kw4yiLiZQD+FcWyXYAEQfvICddi+AnEO2ycIOISw7UAVxieD/Cyz5mRMohfRSwoqoz+xNuIB+cj9loEB3Pw2448NaitKSLLRck2q5pOI9O9g/t/tkXda8Tbg0+PszB9FN8DuPaXKnKW4YcQn1Xk3HSIry5ps8UQ/2W5aQnxIwBdu7yFcgrxPsRjVXu8HOh0qao30cArp9SZZxDfg3h1wTzKxu5E/LUxX5wKdX5SnAzmDx4A4OIqLbB69yMesE1pKojLjVdoNsfyiPi45hZmAn3uLWdpOtfQOaVmikEs7ovj8hFWpz7EV6mel0L9Xy23FMYlPYZenAx0yDB1/PX6dledmQjikjkXCxqMJS9WtfFCyH9XtSekEF+2dH+P4tzITduTygGfv58a5VCTH5PtXD7EFZiNyUDBhHnsFTBgE0SQIA9pfFtgo6cKGuhooeilaKH41eDs38Ip+f4At1Rq/sjr6NEwQqb/I/DQqsLvaFUjvAx+eWirddAJZnAj1DFJL0mSg/gcIpPkMBkhoyCSJ8lTZIxk0TpKDjXHliJzZPO50dR5ASNSnzeLvIvod0HG/mdkmOC0z8VKnzcQ2M/Yz2vKldduXjp9bleLu0ZWn7vWc+l0JGcaai10yNrUnXLP/8Jf59ewX+c3Wgz+B34Df+vbVrc16zTMVgp9um9bxEfzPU5kPqUtVWxhs6OiWTVW+gIfywB9uXi7CGcGW/zk98k/kmvJ95IfJn/j3uQ+4c5zn3Kfcd+AyF3gLnJfcl9xH3OfR2rUee80a+6vo7EK5mmXUdyfQlrYLTwoZIU9wsPCZEtP6BWGhAlhL3p2N6sTjRdduwbHsG9kq32sgBepc+xurLPW4T9URpYGJ3ym4+8zA05u44QjST8ZIoVtu3qE7fWmdn5LPdqvgcZz8Ww8BWJ8X3w0PhQ/wnCDGd+LvlHs8dRy6bLLDuKMaZ20tZrqisPJ5ONiCq8yKhYM5cCgKOu66Lsc0aYOtZdo5QCwezI4wm9J/v0X23mlZXOfBjj8Jzv3WrY5D+CsA9D7aMs2gGfjve8ArD6mePZSeCfEYt8CONWDw8FXTxrPqx/r9Vt4biXeANh8vV7/+/16ffMD1N8AuKD/A/8leAvFY9bLAAAAOGVYSWZNTQAqAAAACAABh2kABAAAAAEAAAAaAAAAAAACoAIABAAAAAEAAAHgoAMABAAAAAEAAAEgAAAAAEyKi5EAAEAASURBVHgB7Z0J3F3D+ccneyS2CJKQICFKIiEVjT1BUaRKq7baKrRp/2hLLaWWNi1KxVa1FI219i6U2hprLEXSIBHEliCLRJBd4v7nO+3cnrudu99z7rm/+Xze955zZv/OnHnmeWbOOW1S1hk5ERABERABERCBhhJo29DclJkIiIAIiIAIiIAjIAGsjiACIiACIiACERCQAI4AurIUAREQAREQAQlg9QEREAEREAERiICABHAE0JWlCIiACIiACEgAqw+IgAiIgAiIQAQEJIAjgK4sRUAEREAEREACWH1ABERABERABCIgIAEcAXRlKQIiIAIiIAISwOoDIiACIiACIhABAQngCKArSxEQAREQARGQAFYfEAEREAEREIEICEgARwBdWYqACIiACIiABLD6gAiIgAiIgAhEQEACOALoylIEREAEREAEJIDVB0RABERABEQgAgLtI8izIVn+4x//MF988YXZaKONzIABA3LyfPzxx82iRYvM1ltvbXr06JHjH/WF5cuXm0mTJpnXXnvNcLzJJpuY7bff3nTs2LEmRXvjjTcMfz179jRf/vKXq0qTMn700Udm4MCBplu3bjlpvfzyy+b55583S5YsMeuuu64ZPnx4DvPJkyebtdZay/Tu3Tsdf9myZWbGjBnpcw7atGljNt5444xrs2bNMi+99FL62ueff27eeustVxbyw9HGtPW8efPMxx9/nA7LwWqrrZZTnowA9oQ2eOGFF8wqq6xitthiC9OhQwcXJJVKuTLl8582bZqZPn16OinKDh+Y9+rVy6W33nrrmb59+6bDfPjhh+azzz5LnwcPNt10U3dKv27bNnPuDCvKl52ej1/M34fzv8XC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443NDjvsYCZOnOg2b5111lk5Fa3kAhvA1lhjDbP22mtXEl1xakRA/GsEsoJkli5d6ixAaoMK4AWifP755+5svfXWK3s8QfjyDmm1QQBoHQ6x9BTb9FuLbBshw6raBR1WSWYpo0ePNnPmzDFs6R8zZoy58MILzYgRI9z679lnn2369OkTloT8REAERKChBLQLuqG4Y51ZI2RYzTTgV199NQMmJuFp06alr+2zzz6Gv3nz5plu3bq5tZK0pw5EQAREIAYEtAkrBo0QURGikGE1E8ClMuvevXupQRVOBERABBpKQAK4obibMrNayrC6maCbkqwKLQIi0NIEvADWm7Bauhs0rPISwA1DrYxEQATiTsALYL2II+4tlYzySQAnox1VCxEQgRoQ0CasGkBUEiUTkAAuGZUCioAIJJkAjyDxfgIecQl+tS3JdVbdoiUgARwtf+UuAiIQEwJe+9X6b0wapAWKIQHcAo2sKoqACBQnoPXf4owUorYEJIBry1OpiYAINCkBL4ClATdpAzZhsSWAm7DRVGQREIHaE/AmaO2Arj1bpZifgARwfi66KgIi0GIEvAYsAdxiDR9hdSWAI4SvrEVABOJDQAI4Pm3RKiWRAG6VllY9RUAEQglIAIfikWcdCEgA1wGqkhQBEWg+Al4AaxNW87Vds5ZYArhZW07lFgERqCkBL4C1BlxTrEoshIAEcAgceYmACLQOAe2Cbp22jktNJYDj0hIqhwiIQKQEpAFHir8lM5cAbslmV6VFQASyCUgAZxPReb0JSADXm7DSFwERaAoCXgBrE1ZTNFciCikBnIhmVCVEQASqJeAFsDZhVUtS8UslIAFcKimFEwERSDQBbcJKdPPGsnISwLFsFhVKBESg0QSkATeauPKrmQCeNGmSWbhwYShRPnb9wgsvmDlz5oSGk6cIiIAINJqABHCjiccrvyhkWE0E8LPPPmsOPfRQM3v27IJEH3/8cbP99tubsWPHmhEjRpibb765YFh5iIAIiECjCUgAN5p4fPKLSoa1rwbBihUrzLXXXmuuu+46s3LlyoJJLVmyxJx55pnmoosuMsOHDzdTpkwxBx98sNlzzz3NOuusUzCePERABESgEQRSqZRZtGiRadOmjVl11VUbkaXyiAGBqGVYVRow5uQJEyaY2267zbRvX1iWv/766w41whc3YMAAM2jQIDN+/Hh3rn8iIAIiECUBtF+EMMIXISzXGgSilmGFpWYJ/LfZZhtz4403Fg05c+ZM07Nnz4xwnIeZrDMC60QEREAE6khA5uc6wo1x0lHLsKoEcLt27UpCO2/ePNO1a9eMsF26dCm6aSsjQsgJm78wa8+YMSMklLzqTQBriFw0BLgHFixY4CxS0ZSguXN99913XQWw5FXajz/88EPToUOHmo1rzU20fqVnslRsw2+puUctw6oSwKVWslu3bjnAANi3b99SkwgNB0QEuh6gD8VUd0/xrzvighmwB4P7QG1QEFFJHpigK2WIotGxY8eK45dUQAVy+41qJYBLxVkvGdYQAbzeeuuZ999/33zxxRembdv/LDu/9957Zq+99iq1/qHhVlllFbPRRhuZPn36hIaTZ/0IPPPMM25dv345KOUwAizzoBmwt0KufAJz5851kVgaq5QhQgFLX6Xxyy91a8bA0umXDBpFoF4yrKpNWGGVX7x4sdtkxQ7oIUOGuFnhuHHjnBB+4IEH3PrvtttuG5aE/ERABESgIQT8gF6p9tuQQiqThhJohAyrmwCeNWuWGT16tHvpBlrvueeea66//nr3LPDFF1/szvXS84b2J2UmAiJQgIBeQ1kATAtfboQMq5kJ+tVXX81oqn79+plp06alr2299dbmySefNB999JGe/U1T0YEIiEAcCEgDjkMrRFuGKGRY3TTgfCh5vk4v3shHRtdEQASiJCABHCX95sm71jKsoQK4eTCrpCIgAq1EwAtgLYu1UqtHX1cJ4OjbQCUQARGImIAXwNqEFXFDtFj2EsAt1uCqrgiIQC4BbcLKZaIr9ScgAVx/xspBBEQg5gSkAce8gRJaPAnghDasqiUCIlA6AQng0lkpZO0ISADXjqVSEgERaFICEsBN2nBNXmwJ4CZvQBVfBESgegJeAGsXdPUslULpBCSAS2elkCIgAgkloE1YCW3YmFdLAjjmDaTiiYAI1J+A14D1GFL9WSuH/xGQAP4fCx2JgAi0KAH/eTsJ4BbtABFVWwI4IvDKVgREIB4Eli5daj7//HPTqVMn06FDh3gUSqVoCQISwC3RzKqkCIhAIQLe/KwNWIUI6Xq9CEgA14us0hUBEWgKAl4Ay/zcFM2VqEJKACeqOVUZERCBcgloB3S5xBS+VgQkgGtFUumIgAg0JQFpwE3ZbIkotARwIppRlRABEaiUgARwpeQUr1oCEsDVElR8ERCBpibgBbA2YTV1MzZl4SWAm7LZVGgREIFaEfACWJuwakVU6ZRKQAK4VFIKJwIikEgC2oSVyGZtikq1r0UpX3vtNdOmTRvTv39/07ZtfpnOm2bmzp2bkV2vXr1M586dM67pRAREQAQaSUAacCNpxzOvqGRYVQKYmePBBx/shO+8efPMFltsYa644gr3RplszDfddFOO39VXX22GDh2aHVTnIiACItAwAhLADUMdu4yilmH51dUSMf32t781Q4YMMffee695+OGHzYIFC8w999yTN/aUKVPMySefbF588cX0n4RvXlS6KAIi0EACEsANhB2zrKKWYVUJ4Mcff9wccMABzuzMBob99tvPPPTQQ3kRT5061QwcONDQ2ZctW5Y3jC6KgAiIQKMJeAGsXdCNJh99flHLsIoFMC8vnz17tmEd17sePXq4a/7c/7L+O2PGDDN27Fizxx57OK35ggsu8N76FQEREIHICGgTVmToI804DjKs4jXgjz/+2KRSKdO1a9c0RI79bDJ90R5gmt51113N8ccfbwYMGGCee+45M2rUKHc8cuTIYNCKjtGoZ82a5b5oUlECilQTAm+99VZN0lEi5RNgD8bixYuN2qB8dnPmzHGRGLuq4ffJJ58YvqxUTRrll771YtDXa2FFjYMMq1gAr7nmmulO65+fowP37Nkzp0f07t3bXHnllenrw4YNM8OHDzdPPfWUqZUA/uCDD5ygT2eig4YTmD59esPzVIb/IbBkyRLDn9qg/B4xf/58F4kBuRp+KBrt27c3K1asKL8QilEyASaatRDAcZBhFQvgjh07mnXWWceZltdbbz0HDzMzwjbb0amffvppc8QRR6S9li9fbvr27Zs+r+aAtZtBgwaZPn36VJOM4lZB4JprrjG77757FSkoajUEZs6caSZPnqw2qAAij1Di6L88Slmpe+aZZ5xFcPDgwZUmoXglEEDOvPzyyyWEDA8SBxlW8RowVdt///3Ntddea5g5vv322+bOO+80++67r6s1s5Tx48e7WTmC+pJLLnFCGM+JEyeaCRMmmL333tuF1T8REAERiIqAXzbTJqyoWiC6fKOWYVUJ4GOOOcatuzJzPOSQQ9wMcpdddnE0WZMdPXq0YX2Fjj1mzBhz4YUXmhEjRrj137PPPlsaa3T9TjmLgAj8l4AXwH4p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xowZ2V5Vn/NdWr5bu2jRopy0wvxyAifgQlRtEDbWhPk1K/KoOIf15zC/hnK233xsuDv22GNTm266aepPf/pTTt4HHXSQ83v77bdz/Cq9YAV+6mtf+1rqW9/6VmqvvfZKkcesWbNccvaD2Knvfe97qZ133jl1xBFHpHbdddfUP/7xj0qzaop4dnLjGG+22WapefPmZZTZfuja+X3961/PuF7tSVgbhPlVm29c499zzz2O85FHHplTRPtZQef3+9//Psevmgvjxo1L7bDDDqnvfve7KfvSiNQ555yTTi7MLx0oYQeNboOwsSbMr9mxN5ozvML6c5hfo1lHogEzw+jTp4+xgi5jsvHBBx+Y999/P+NaLU6uuuoqM3LkSHPXXXeZ+++/36y//vrmlltucUk/9NBDxgpj889//tPccMMN5rTTTjNjx45tCU0YDtQ/6OCz7rrrBi/V5DisDcL8apJ5TBPp1auXefHFF838+fMzSvj3v/+95m2Atemyyy5zffz666939959993nPmoe5pdRsASeNLINwsaaML8kYG8k57D+HOYXBefIBDCvzcMUFhx8GPythprB4ZVXXjHHHXecE6Df+c53zB133OH8GbhOOumkjLC33nqrsVp1xjVO+Ej8gQcemL4+cOBA89xzz7nzNdZYw5x++ummXbt27hw/zIJz5sxJh0/qAayzJ0HltMHVV1+dw/vEE080mJKzXVgbhPllp5Okc/retttumzEJwuz8ySefmM033zyjqrfffrs56qijzN57721+8IMfGJZxMKNxHOT9xhtv5NwXJESap556qtl4441dul27djUbbbSRuw/C/DIKkcCTUtvg008/Nb/61a/MAQccYPbff3/zy1/+0i2hldMGYWNNmF8SsJfKmbq2Ul+PTACvueaaOYMPM380Ve8WLFhgELq8Y/XKK680++67rznzzDPN9OnT3QCF1sq6Lc6aDsw111xjNtlkEx89/XvooYeaddZZx50vX77c3H333caanN359ttv7wS0D4wAt+Zx06NHD38psb+77757xiTovffec2uDAwYMSNc5rA14B/S1116bthZMmjTJsH7ct2/fdHx/ENYGYX4+flJ/EagPPPBAunpMgLjWpk2b9LW//OUv5oorrnAT0UsvvdR06dLFCdMOHTqYTp06GWviS4elbzPYZTusHcFJKAL81Vdf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" width="100%" />
+The alarm codes are</p>
 <ul>
 <li>“0”: No alarm.</li>
-<li>“1”: Hotelling’s <span class="math inline">\(T^2\)</span> alarm.</li>
+<li>“1”: Hotelling’s <span class="math inline">\(T^2\)</span>
+alarm.</li>
 <li>“2”: Squared Prediction Error alarm.</li>
 <li>“3”: Both alarms.</li>
 </ul>
@@ -350,9 +912,20 @@ for(i in <span class="dv">1</span>:<span class="kw">nrow</span>(alarm1A_xts)){
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p>We have supplied our motivation for this package, and we have discussed implementing a multivariate process monitoring scheme with this package using the example of a decentralized WWT plant in Golden, CO. We believe that this software will provide system engineers with the tools necessary to quickly and accurately detect abnormalities in multivariate, autocorrelated, non-stationary, non-linear, and multi-state water treatment systems. Further, we have given a synthetic example showing how the functions within this package would be implemented and tuned in practice.</p>
+<p>We have supplied our motivation for this package, and we have
+discussed implementing a multivariate process monitoring scheme with
+this package using the example of a decentralized WWT plant in Golden,
+CO. We believe that this software will provide system engineers with the
+tools necessary to quickly and accurately detect abnormalities in
+multivariate, autocorrelated, non-stationary, non-linear, and
+multi-state water treatment systems. Further, we have given a synthetic
+example showing how the functions within this package would be
+implemented and tuned in practice.</p>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

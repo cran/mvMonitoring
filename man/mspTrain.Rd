@@ -4,8 +4,16 @@
 \alias{mspTrain}
 \title{Multi-State Adaptive-Dynamic Process Training}
 \usage{
-mspTrain(data, labelVector, trainObs, updateFreq = ceiling(0.5 * trainObs),
-  Dynamic = TRUE, lagsIncluded = c(0, 1), faultsToTriggerAlarm = 5, ...)
+mspTrain(
+  data,
+  labelVector,
+  trainObs,
+  updateFreq = ceiling(0.5 * trainObs),
+  Dynamic = TRUE,
+  lagsIncluded = c(0, 1),
+  faultsToTriggerAlarm = 5,
+  ...
+)
 }
 \arguments{
 \item{data}{An xts data matrix}
@@ -127,7 +135,7 @@ This function is designed to identify and sort out sequences of
 
   For more details, see Kazor et al (2016):
 
-  \url{http://link.springer.com/article/10.1007/s00477-016-1246-2}
+  \doi{10.1007/s00477-016-1246-2}
 }
 \examples{
 
