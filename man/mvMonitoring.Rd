@@ -3,6 +3,7 @@
 \docType{package}
 \name{mvMonitoring}
 \alias{mvMonitoring}
+\alias{mvMonitoring-package}
 \title{A Package for Multivariate Statistical Process Monitoring}
 \description{
 The \code{mvMonitoring} package has four main functions for
@@ -13,7 +14,7 @@ The \code{mvMonitoring} package has four main functions for
 }
 \section{\code{mvMonitoring} external functions}{
 
-  \itemize{
+  \describe{
     \item{\code{\link{mspProcessData}} - }{A function for synthetic process
       data generation. Use this data to test new process monitoring methods.
     }

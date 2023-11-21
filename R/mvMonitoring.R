@@ -9,7 +9,7 @@
 #'   use, but will largely be unnecessary to call in common workflows.
 #'
 #' @section \code{mvMonitoring} external functions:
-#'   \itemize{
+#'   \describe{
 #'     \item{\code{\link{mspProcessData}} - }{A function for synthetic process
 #'       data generation. Use this data to test new process monitoring methods.
 #'     }
@@ -29,6 +29,7 @@
 #'   }
 #'
 #' @docType package
+#' @aliases mvMonitoring-package
 
 
 NULL

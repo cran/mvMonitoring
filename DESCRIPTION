@@ -2,7 +2,8 @@ Package: mvMonitoring
 Type: Package
 Title: Multi-State Adaptive Dynamic Principal Component Analysis for
         Multivariate Process Monitoring
-Version: 0.2.2
+Version: 0.2.4
+Date: 2023-11-21
 Authors@R: 
   c(
     person(
@@ -19,7 +20,6 @@ Authors@R:
       "Amanda", "Hering", email = "mandy_hering@baylor.edu", role = c("aut")
     )
   )
-Maintainer: Gabriel Odom <gabriel.odom@fiu.edu>
 Description: Use multi-state splitting to apply Adaptive-Dynamic PCA (ADPCA) to
     data generated from a continuous-time multivariate industrial or natural
     process. Employ PCA-based dimension reduction to extract linear combinations
@@ -40,11 +40,12 @@ VignetteBuilder: knitr
 URL: https://github.com/gabrielodom/mvMonitoring
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-06-29 15:44:06 UTC; gabrielodom
+Packaged: 2023-11-21 17:15:35 UTC; gabrielodom
 Author: Melissa Innerst [aut],
   Gabriel Odom [aut, cre],
   Ben Barnard [aut],
   Karen Kazor [aut],
   Amanda Hering [aut]
+Maintainer: Gabriel Odom <gabriel.odom@fiu.edu>
 Repository: CRAN
-Date/Publication: 2023-06-30 18:30:02 UTC
+Date/Publication: 2023-11-21 17:30:02 UTC
